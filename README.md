@@ -56,8 +56,10 @@ pactl set-source-volume \
 ```
 The `music`, `ambient` and `fx` folders must keep their names as they're representing 3 different channels.
 
-5. Install requirements.
+5. Install requirements and setup virtual env.
 ```bash
+python3 -m venv venv
+source ./venv/bin/activate
 pip install -r requirements.txt
 ```
 

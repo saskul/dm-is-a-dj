@@ -5,10 +5,12 @@
 # -------------------------
 
 # Load environment variables from .env
-if [ -f ../.env ]; then
-    export $(grep -v '^#' ../.env | xargs)
+ENV_FILE="$(dirname "$0")/.env"
+
+if [ -f "$ENV_FILE" ]; then
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
 else
-    echo ".env not found!"
+    echo ".env not found in $(dirname "$0")!"
     exit 1
 fi
 
