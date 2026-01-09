@@ -6,7 +6,9 @@ state = {
         "volume": 100,
         "loop_mode": "list",
         "playlist": [],
-        "playlist_index": 0
+        "playlist_index": 0,
+        "position": 0.0,
+        "duration": 0.0
     },
     "ambient": {
         "playing": False,
@@ -15,7 +17,16 @@ state = {
         "volume": 75,
         "loop_mode": "track",
         "playlist": [],
-        "playlist_index": 0
+        "playlist_index": 0,
+        "position": 0.0,
+        "duration": 0.0
+    },
+    "fx": {
+        "playing": False,
+        "track": None,
+        "volume": 100,
+        "position": 0.0,
+        "duration": 0.0
     },
     "available": {
         "loop_modes": [

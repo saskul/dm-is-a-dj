@@ -15,9 +15,9 @@ from .audio import (
     set_music_loop_mode,
     set_ambient_volume,
     set_ambient_crossfade_time,
-    set_ambient_loop_mode
+    set_ambient_loop_mode,
+    play_fx
 )
-from .fx import play_fx
 from .voice_effects import set_voice_effect, available_effects
 from .utils import get_local_ip, list_audio_files
 from .state import state
@@ -94,7 +94,7 @@ def ambient_crossfade_time(crossfade_time: float):
     return state["ambient"]
 
 @app.post("/ambient/loop_mode")
-def ambient_loop_mode(mode: float):
+def ambient_loop_mode(mode: str = None):
     set_ambient_loop_mode(mode)
     return state["ambient"]
 
@@ -119,9 +119,9 @@ def voice_effect(name: str):
 # =======================
 
 @app.post("/fx/play")
-def fx_play(path: str):
-    play_fx(path)
-    return {"fx": path}
+def fx_play(track: str):
+    play_fx(track)
+    return state["fx"]
 
 # =======================
 # LIST TRACKS
