@@ -1,6 +1,10 @@
 from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
 load_dotenv(dotenv_path=env_path)
@@ -30,6 +34,9 @@ from .state import state
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+FRONTEND_DIR = os.path.join(BASE_DIR, "client")
+BUILD_DIR = os.path.join(FRONTEND_DIR, "build")
+STATIC_DIR = os.path.join(BUILD_DIR, "static")
 
 app = FastAPI(title="DM is a DJ 🎧")
 
@@ -204,6 +211,37 @@ async def ws(ws: WebSocket):
     except Exception:
         pass
 
+# =======================
+# CLIENT
+# =======================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+if os.path.isdir(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    print(f"✅ Mounting static files from: {STATIC_DIR}")
+else:
+    print(f"⚠️ Static directory not found, skipping mount: {STATIC_DIR}")
+
+@app.get("/{full_path:path}")
+def serve_react_app(full_path: str):
+    """
+    Fallback endpoint dla wszystkich ścieżek front-endu.
+    Jeśli plik istnieje w build -> zwróć go,
+    jeśli nie istnieje -> zwróć index.html (React Router handle).
+    """
+    requested_file = os.path.join(BUILD_DIR, full_path)
+
+    if os.path.isfile(requested_file):
+        return FileResponse(requested_file)
+
+    # fallback do index.html
+    return FileResponse(os.path.join(BUILD_DIR, "index.html"))
 
 # =======================
 # STARTUP
