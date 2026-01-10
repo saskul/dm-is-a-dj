@@ -18,7 +18,13 @@ from .audio import (
     set_ambient_loop_mode,
     play_fx
 )
-from .modulator import set_voice_effect, available_effects
+from .modulator import (
+    list_custom_presets,
+    set_custom_effect,
+    load_custom_preset,
+    save_custom_preset,
+    delete_custom_preset
+)
 from .utils import get_local_ip, list_audio_files
 from .state import state
 
@@ -105,14 +111,50 @@ def ambient_loop_mode(mode: str = None):
 
 @app.get("/modulator")
 def voice_effects():
-    return available_effects()
+    return list_custom_presets()
 
 
 @app.post("/modulator")
 def voice_effect(effect: str):
-    state["modulator"]["effect"] = set_voice_effect(effect)
+    state["modulator"]["effect"] = load_custom_preset(effect)
     return state["modulator"]
 
+@app.post("/modulator/custom")
+def voice_effect(
+    gain: float = 0.0,        # 0..10    -> wzmocnienie sygnału
+    drive: float = 0.0,       # 0..1     -> przester / nasycenie
+    tone: float = 0.0,        # 0..1     -> filtr niskoprzepustowy, zmienia barwę
+    mix: float = 0.0,         # 0..1     -> miks dry/wet (czysty/efekt)
+    pitch: float = 0.0,       # -12..12  -> pitch shift w półtonach
+    chorus: float = 0.0,      # 0..1     -> głębokość efektu chorus
+    delay: float = 0.0,       # 0..500   -> czas delay w ms
+    reverb: float = 0.0,      # 0..1     -> ilość pogłosu
+    ring_mod: float = 0.0,    # 0..2000  -> częstotliwość modulacji ring w Hz
+    bitcrusher: float = 0.0   # 0..1     -> ilość redukcji bitów / cyfrowego szumu
+):
+    state["modulator"]["effect"] = set_custom_effect(
+        gain=gain,
+        drive=drive,
+        tone=tone,
+        mix=mix,
+        pitch=pitch,
+        chorus=chorus,
+        delay=delay,
+        reverb=reverb,
+        ring_mod=ring_mod,
+        bitcrusher=bitcrusher
+    )
+    return state["modulator"]
+
+@app.put("/modulator")
+def save_voice_effect(name: str):
+    save_custom_preset(name)
+    return state["modulator"]
+
+@app.delete("/modulator")
+def delete_voice_effect(name: str):
+    delete_custom_preset(name)
+    return state["modulator"]
 
 # =======================
 # FX

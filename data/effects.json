@@ -1,0 +1,63 @@
+{
+  "off": null,
+  "demon": {
+    "gain": 7.0,
+    "drive": 0.8,
+    "tone": 0.7,
+    "mix": 1.0,
+    "pitch": 0.0,
+    "chorus": 0.2,
+    "delay": 0,
+    "reverb": 0.0,
+    "ring_mod": 0,
+    "bitcrusher": 0
+  },
+  "abberation": {
+    "gain": 2.0,
+    "drive": 0.3,
+    "tone": 0.5,
+    "mix": 1.0,
+    "pitch": 0,
+    "chorus": 0.0,
+    "delay": 20,
+    "reverb": 0.2,
+    "ring_mod": 200,
+    "bitcrusher": 0.2
+  },
+  "ghost": {
+    "gain": 1.5,
+    "drive": 0.1,
+    "tone": 0.9,
+    "mix": 0.8,
+    "pitch": 5,
+    "chorus": 0.5,
+    "delay": 100,
+    "reverb": 0.7,
+    "ring_mod": 0,
+    "bitcrusher": 0.0
+  },
+  "orc": {
+    "gain": 5.0,
+    "drive": 0.9,
+    "tone": 0.4,
+    "mix": 1.0,
+    "pitch": -5,
+    "chorus": 0.1,
+    "delay": 30,
+    "reverb": 0.3,
+    "ring_mod": 50,
+    "bitcrusher": 0.2
+  },
+  "test": {
+    "gain": 9.0,
+    "drive": 0.9,
+    "tone": 0.1,
+    "mix": 0.1,
+    "pitch": 12,
+    "chorus": 1.0,
+    "delay": 200,
+    "reverb": 0.8,
+    "ring_mod": 300,
+    "bitcrusher": 0.7
+  }
+}
