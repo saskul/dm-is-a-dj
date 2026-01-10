@@ -4,7 +4,6 @@
     box-sizing: border-box;
     margin-top: 20px;
     padding: 10px 0px;
-    max-height: 75dvh;
     overflow: auto;
     background-color: #111;
 }
