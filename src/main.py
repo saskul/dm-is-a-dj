@@ -18,7 +18,7 @@ from .audio import (
     set_ambient_loop_mode,
     play_fx
 )
-from .voice_effects import set_voice_effect, available_effects
+from .modulator import set_voice_effect, available_effects
 from .utils import get_local_ip, list_audio_files
 from .state import state
 
@@ -103,15 +103,15 @@ def ambient_loop_mode(mode: str = None):
 # VOICE FX
 # =======================
 
-@app.get("/voice/effects")
+@app.get("/modulator")
 def voice_effects():
     return available_effects()
 
 
-@app.post("/voice/effect/{name}")
-def voice_effect(name: str):
-    state["voice_effect"] = set_voice_effect(name)
-    return {"voice_effect": state["voice_effect"]}
+@app.post("/modulator")
+def voice_effect(effect: str):
+    state["modulator"]["effect"] = set_voice_effect(effect)
+    return state["modulator"]
 
 
 # =======================

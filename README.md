@@ -12,11 +12,9 @@ sudo apt install -y pipewire pipewire-pulse pulseaudio-utils
 # audio playback
 sudo apt install -y mpv alsa-utils
 
-# LADSPA plugins (voice effects)
-sudo apt install -y swh-plugins tap-plugins
 
-# optional: for recording / monitoring
-sudo apt install -y pavucontrol
+sudo apt install -y 
+#
 ```
 
 2. Setup audio channnels:

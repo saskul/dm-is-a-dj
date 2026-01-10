@@ -28,6 +28,9 @@ state = {
         "position": 0.0,
         "duration": 0.0
     },
+    "modulator": {
+        "effect": "off"
+    },
     "available": {
         "loop_modes": [
             "null",
