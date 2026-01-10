@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -20,7 +21,8 @@ from .audio import (
     set_ambient_volume,
     set_ambient_crossfade_time,
     set_ambient_loop_mode,
-    play_fx
+    play_fx,
+    set_fx_volume
 )
 from .modulator import (
     list_custom_presets,
@@ -172,6 +174,11 @@ def fx_play(track: str):
     play_fx(track)
     return state["fx"]
 
+@app.post("/fx/volume")
+def fx_volume(volume: str):
+    set_fx_volume(volume)
+    return state["fx"]
+
 # =======================
 # LIST TRACKS
 # =======================
@@ -180,21 +187,21 @@ def fx_play(track: str):
 def get_music_tracks():
     music_dir = os.path.join(DATA_DIR, "music")
     tracks = list_audio_files(music_dir)
-    return {"tracks": tracks}
+    return tracks
 
 
 @app.get("/tracks/ambient")
 def get_ambient_tracks():
     ambient_dir = os.path.join(DATA_DIR, "ambient")
     tracks = list_audio_files(ambient_dir)
-    return {"tracks": tracks}
+    return tracks
 
 
 @app.get("/tracks/fx")
 def get_fx_tracks():
     fx_dir = os.path.join(DATA_DIR, "fx")
     tracks = list_audio_files(fx_dir)
-    return {"tracks": tracks}
+    return tracks
 
 
 # =======================
@@ -207,7 +214,7 @@ async def ws(ws: WebSocket):
     try:
         while True:
             await ws.send_json(state)
-            await ws.receive_text()
+            await asyncio.sleep(0.1)
     except Exception:
         pass
 

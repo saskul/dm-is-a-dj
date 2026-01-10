@@ -1,0 +1,99 @@
+:root {
+  --slider-track: var(--section-color);       /* dark track background */
+  --slider-fill: var(--effect-color);     /* filled portion color */
+  --slider-thumb: var(--effect-color);
+  --slider-thumb-border: var(--bg-color);
+  --slider-label: var(--font-color);
+}
+
+.volume-slider-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.volume-slider-wrapper > h3 {
+  color: var(--font-color);
+  margin: 10px;
+}
+
+.volume-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  font-family: sans-serif;
+}
+
+.volume-label {
+  width: 40px;
+  text-align: right;
+  font-weight: bold;
+  color: var(--slider-label);
+}
+
+/* Base slider */
+.volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--slider-track);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+
+  /* track fill using background gradient and CSS variable */
+  background: linear-gradient(
+    to right,
+    var(--slider-fill) 0%,
+    var(--slider-fill) calc(var(--value) * 1%),
+    var(--slider-track) calc(var(--value) * 1%),
+    var(--slider-track) 100%
+  );
+}
+
+/* Thumb */
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  border: 2px solid var(--slider-thumb-border);
+  margin-top: 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  border: 2px solid var(--slider-thumb-border);
+  cursor: pointer;
+}
+
+.volume-slider::-ms-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  border: 2px solid var(--slider-thumb-border);
+  cursor: pointer;
+}
+
+/* Active thumb effect */
+.volume-slider:active::-webkit-slider-thumb {
+  transform: scale(1.3);
+}
+
+.volume-slider:focus {
+  outline: none;
+}

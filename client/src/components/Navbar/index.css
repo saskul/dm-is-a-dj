@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  height: 56px;
+  background: var(--section-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  padding: 10px;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.nav-btn.on {
+  color: var(--header-color);
+}
+
+.nav-btn.off {
+  color: var(--header-color);
+  opacity: 0.5;
+}
+
+.nav-btn.loading {
+  color: var(--header-color);
+}
+
+.nav-btn:active {
+  transform: scale(0.9);
+}

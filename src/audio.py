@@ -262,7 +262,8 @@ def set_ambient_volume(v): set_volume("ambient", v)
 def set_ambient_loop_mode(m): set_loop_mode("ambient", m)
 def set_ambient_crossfade_time(s): set_crossfade_time("ambient", s)
 
-def play_fx(track, volume=100): 
+def set_fx_volume(v): set_volume("fx", v)
+
+def play_fx(track): 
     state.setdefault("fx", {})
-    state["fx"]["volume"] = volume
     play("fx", track)

@@ -1,0 +1,11 @@
+.section {
+    border-bottom: 5px solid var(--section-color);
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: var(--bg-color);
+}
+
+.section > h2 {
+    color: var(--header-color);
+    margin-bottom: 20px;
+}

@@ -1,0 +1,59 @@
+.playlist {
+    border: 2px solid black;
+    border-radius: 10px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    padding: 10px 0px;
+    max-height: 75dvh;
+    overflow: auto;
+    background-color: #111;
+}
+
+.playlist_control {
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-bottom: 0;
+  padding: 10px;
+}
+
+.playlist_control:first-of-type {
+  border-radius: 10px 10px 0px 0px;
+}
+
+.playlist_control:last-of-type {
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 0px 0px 10px 10px;
+}
+
+.playlist_control-only {
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.folder {
+    margin-left: 16px;
+    padding: 16px 8px;
+    color: var(--font-color);
+    cursor: pointer; 
+    font-size: 1.1rem;
+}
+
+.track {
+    color: var(--font-color);
+    margin-left: 16px;
+    padding: 16px 0px;
+    cursor: pointer; 
+    font-size: 1.1rem;
+}
+
+.track.highlight {
+  color: var(--effect-color); /* bright color for current track */
+  font-weight: bold;
+}
+
+.track.dim,
+.folder.dim {
+  color: var(--effect-color); /* dim other tracks/folders */
+}

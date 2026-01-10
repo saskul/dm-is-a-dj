@@ -3,6 +3,7 @@ import threading
 import sounddevice as sd
 import numpy as np
 import json
+from .state import state
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "../data")
 PRESETS_FILE = os.path.join(DATA_DIR, "effects.json")
@@ -23,6 +24,25 @@ _stream = None
 _custom_params_lock = threading.Lock()
 _custom_params = None  # None = brak custom effect
 _custom_last_y = 0.0   # pamięć filtra dla tone
+
+# =========================
+# VOLUME STATE
+# =========================
+_volume_lock = threading.Lock()
+_volume = 1.0  # 0.0 .. 1.0
+
+# =========================
+# INITIALIZE VOLUME FROM STATE
+# =========================
+try:
+    initial_volume = float(getattr(state.modulator, "volume", 100))
+except Exception:
+    initial_volume = 100.0
+
+initial_volume = max(0.0, min(100.0, initial_volume))
+
+with _volume_lock:
+    _volume = initial_volume / 100.0
 
 # =========================
 # EFFECTS MANAGEMENT
@@ -49,7 +69,12 @@ def _audio_callback(indata, outdata, frames, time, status):
         outdata[:] = 0.0
         return
 
-    outdata[:, 0] = fx(x)
+    y = fx(x)
+
+    with _volume_lock:
+        vol = _volume
+
+    outdata[:, 0] = y * vol
 
 # =========================
 # STREAM CONTROL
@@ -278,3 +303,21 @@ def set_custom_effect(gain=1.0, drive=0.0, tone=0.0, mix=1.0,
     _start_stream()
 
     return "custom"
+
+def set_volume(value: float):
+    """
+    Sets output volume and syncs with state.modulator.volume
+
+    value: 0..100
+    """
+    global _volume
+
+    value = max(0.0, min(100.0, float(value)))
+
+    with _volume_lock:
+        _volume = value / 100.0
+
+    # sync with global state
+    state.modulator.volume = int(value)
+
+    return state.modulator.volume
