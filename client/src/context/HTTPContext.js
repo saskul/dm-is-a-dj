@@ -148,6 +148,7 @@ export const HTTPAudioProvider = ({ children }) => {
   const setCustomEffect = useCallback((params) => postWithQuery("/modulator/custom", params, "modulator_custom"), [postWithQuery]);
   const saveVoiceEffect = useCallback((name) => putWithQuery("/modulator", { name }, "modulator_save"), [putWithQuery]);
   const deleteVoiceEffect = useCallback((name) => delWithQuery("/modulator", { name }, "modulator_delete"), [delWithQuery]);
+  const setModulatorVolume = useCallback((volume) => postWithQuery("/modulator/volume", { volume }, "modulator_volume"), [postWithQuery]);
 
   // ---------------------
   // Refetch helper

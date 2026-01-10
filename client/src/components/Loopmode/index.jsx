@@ -3,7 +3,7 @@ import './index.css';
 
 export const LoopModeDropdown = ({ value = null, onChange }) => {
   const options = [
-    { label: "Off", value: null },
+    { label: "Off", value: "off" },
     { label: "Track", value: "track" },
     { label: "Folder", value: "list" },
   ];
@@ -26,7 +26,7 @@ export const LoopModeDropdown = ({ value = null, onChange }) => {
             <ul className="options">
             {options.map((o) => (
                 <li
-                key={o.value ?? "null"}
+                key={o.value ?? "off"}
                 className={o.value === value ? "selected-option" : ""}
                 onClick={() => handleSelect(o.value)}
                 >

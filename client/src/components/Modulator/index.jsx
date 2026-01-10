@@ -5,7 +5,9 @@ import { useWS } from "../../context/WSContext";
 function Modulator () {
     const { 
         tracks,
+        requestLoading,
         loadVoiceEffect,
+        setModulatorVolume
     } = useHTTPAudio();
     const { state } = useWS();
     const files = tracks.modulator;
@@ -14,14 +16,19 @@ function Modulator () {
 
     const {
         effect,
+        volume,
     } = modulator;
+
+    const isVolumeLoading = !!requestLoading.modulator_volume;
 
     return (
         <PlaylistExplorer 
             track={effect}
             files={files}
             onFileClick={loadVoiceEffect}
-            noControls
+            volume={volume}
+            isVolumeLoading={isVolumeLoading}
+            onVolumeChange={setModulatorVolume}
         />
     );
 }

@@ -304,7 +304,7 @@ def set_custom_effect(gain=1.0, drive=0.0, tone=0.0, mix=1.0,
 
     return "custom"
 
-def set_volume(value: float):
+def set_modulator_volume(value: float):
     """
     Sets output volume and syncs with state.modulator.volume
 

@@ -29,7 +29,8 @@ from .modulator import (
     set_custom_effect,
     load_custom_preset,
     save_custom_preset,
-    delete_custom_preset
+    delete_custom_preset,
+    set_modulator_volume
 )
 from .utils import get_local_ip, list_audio_files
 from .state import state
@@ -163,6 +164,11 @@ def save_voice_effect(name: str):
 @app.delete("/modulator")
 def delete_voice_effect(name: str):
     delete_custom_preset(name)
+    return state["modulator"]
+
+@app.post("/modulator/volume")
+def modulator_volume(volume: str):
+    set_modulator_volume(volume)
     return state["modulator"]
 
 # =======================
