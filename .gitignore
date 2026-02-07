@@ -4,3 +4,4 @@ data/ambient/*
 data/fx/*
 data/music/*
 .env
+!client/.env
