@@ -61,6 +61,12 @@ source ./venv/bin/activate
 pip install -r requirements.txt
 ```
 
+6. Create build for the front-end.
+```bash
+cd client
+npm run build
+```
+
 6. Run server.
 ```bash
 ./run_server.sh
