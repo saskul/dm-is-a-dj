@@ -5,7 +5,8 @@ import {
     faMicrophone,
     faTree,
     faFolder,
-    faFolderOpen
+    faFolderOpen,
+    faTrash
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -14,5 +15,6 @@ library.add(
     faBolt,
     faMicrophone,
     faFolder,
-    faFolderOpen
+    faFolderOpen,
+    faTrash
 );

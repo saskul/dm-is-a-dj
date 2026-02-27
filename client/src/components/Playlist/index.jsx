@@ -22,14 +22,26 @@ function buildTree(paths) {
   return root;
 }
 
-const TreeNode = ({ node, name, onClick, currentTrack, loopMode, parentPath = "" }) => {
+const TreeNode = ({
+  node,
+  name,
+  onClick,
+  onDelete,
+  currentTrack,
+  loopMode,
+  parentPath = ""
+}) => {
   const [expanded, setExpanded] = useState(false);
 
   const isFolder = typeof node === "object";
+  const fullPath = parentPath ? `${parentPath}/${name}` : name;
 
   const handleToggle = () => setExpanded((prev) => !prev);
 
-  const fullPath = parentPath ? `${parentPath}/${name}` : name;
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete?.(fullPath);
+  };
 
   let highlight = false;
   let dim = false;
@@ -38,7 +50,12 @@ const TreeNode = ({ node, name, onClick, currentTrack, loopMode, parentPath = ""
     highlight = true;
   }
 
-  if (!isFolder && loopMode === "list" && currentTrack?.startsWith(parentPath + "/") && node !== currentTrack) {
+  if (
+    !isFolder &&
+    loopMode === "list" &&
+    currentTrack?.startsWith(parentPath + "/") &&
+    node !== currentTrack
+  ) {
     dim = true;
   }
 
@@ -49,13 +66,23 @@ const TreeNode = ({ node, name, onClick, currentTrack, loopMode, parentPath = ""
   if (isFolder) {
     return (
       <div className={`folder ${dim ? "dim" : ""}`}>
-        <div onClick={handleToggle}>
+        <div className="folder-row" onClick={handleToggle}>
           {expanded ? (
-            <FontAwesomeIcon icon='folder-open' />
+            <FontAwesomeIcon icon="folder-open" />
           ) : (
-            <FontAwesomeIcon icon='folder' />
-          )} {name}
+            <FontAwesomeIcon icon="folder" />
+          )}
+          <span className="name">{name}</span>
+
+          {onDelete && (
+            <FontAwesomeIcon
+              icon="trash"
+              className="delete-icon"
+              onClick={handleDelete}
+            />
+          )}
         </div>
+
         {expanded &&
           Object.keys(node).map((key) => (
             <TreeNode
@@ -63,6 +90,7 @@ const TreeNode = ({ node, name, onClick, currentTrack, loopMode, parentPath = ""
               node={node[key]}
               name={key}
               onClick={onClick}
+              onDelete={onDelete}
               currentTrack={currentTrack}
               loopMode={loopMode}
               parentPath={fullPath}
@@ -70,48 +98,72 @@ const TreeNode = ({ node, name, onClick, currentTrack, loopMode, parentPath = ""
           ))}
       </div>
     );
-  } else {
-    return (
-      <div
-        className={`track ${highlight ? "highlight" : ""} ${dim ? "dim" : ""}`}
-        onClick={() => onClick(node)}
-      >
-        <FontAwesomeIcon icon='music' /> {name}
-      </div>
-    );
   }
+
+  return (
+    <div
+      className={`track ${highlight ? "highlight" : ""} ${dim ? "dim" : ""}`}
+      onClick={() => onClick(node)}
+    >
+      <FontAwesomeIcon icon="music" />
+      <span className="name">{name}</span>
+
+      {onDelete && (
+        <FontAwesomeIcon
+          icon="trash"
+          className="delete-icon"
+          onClick={handleDelete}
+        />
+      )}
+    </div>
+  );
 };
 
 export const PlaylistExplorer = ({
   files,
   onFileClick,
+  onDelete,
   volume,
   onVolumeChange,
   track,
   crossfade,
   onCrossfadeChange,
-  loopMode = null, // null | 'track' | 'list',
+  loopMode = null,
   onLoopModeChange,
   hasLoopMode = false,
   hasCrossfade = false,
-  noControls=false
+  noControls = false
 }) => {
   const tree = buildTree(files);
 
   return (
-    <div className='playlist_wrapper'>
+    <div className="playlist_wrapper">
       {!noControls && (
         <div>
-          <div className={!hasLoopMode && !hasCrossfade ? 'playlist_control-only' : 'playlist_control'}>
-            <Slider value={volume} onChange={onVolumeChange} header='Volume' />
+          <div
+            className={
+              !hasLoopMode && !hasCrossfade
+                ? "playlist_control-only"
+                : "playlist_control"
+            }
+          >
+            <Slider value={volume} onChange={onVolumeChange} header="Volume" />
           </div>
+
           {hasCrossfade && (
-            <div className='playlist_control'>
-              <Slider value={crossfade} onChange={onCrossfadeChange} header='Crossfade' units='s' max={10} />
+            <div className="playlist_control">
+              <Slider
+                value={crossfade}
+                onChange={onCrossfadeChange}
+                header="Crossfade"
+                units="s"
+                max={10}
+              />
             </div>
           )}
+
           {hasLoopMode && (
-            <div className='playlist_control'>
+            <div className="playlist_control">
               <LoopModeDropdown
                 value={loopMode}
                 onChange={onLoopModeChange}
@@ -121,14 +173,14 @@ export const PlaylistExplorer = ({
         </div>
       )}
 
-
-      <div className='playlist'>
+      <div className="playlist">
         {Object.keys(tree).map((key) => (
           <TreeNode
             key={key}
             node={tree[key]}
             name={key}
             onClick={onFileClick}
+            onDelete={onDelete}
             currentTrack={track}
             loopMode={loopMode}
           />

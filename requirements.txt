@@ -4,3 +4,4 @@ python-dotenv
 sounddevice
 numpy
 websockets
+scipy

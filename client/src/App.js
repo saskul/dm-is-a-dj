@@ -6,9 +6,10 @@ import Section from './components/Section';
 import Music from './components/Music';
 import Ambient from './components/Ambient';
 import FX from './components/FX';
+import Modulator from './components/Modulator';
+import ModulatorEditor from './components/ModulatorEditor';
 import './icons';
 import './App.css';
-import Modulator from './components/Modulator';
 
 function App() {
   return (
@@ -30,6 +31,12 @@ function App() {
             </Section>
             <Section id="section-voice" header='Modulator'>
               <Modulator />
+            </Section>
+            <Section header='Modulator Editor'>
+              <ModulatorEditor
+                onPlay={(params) => console.log(params)}
+                onSubmit={(params) => console.log(params)}
+              />
             </Section>
           </div>
         </HTTPAudioProvider>

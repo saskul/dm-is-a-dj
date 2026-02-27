@@ -93,6 +93,14 @@ export const HTTPAudioProvider = ({ children }) => {
   const getFxTracks = useCallback(() => get("/tracks/fx", "tracks_fx"), [get]);
   const listVoiceEffects = useCallback(() => get("/modulator", "modulator_list"), [get]);
 
+  const refreshVoiceEffects = useCallback(async () => {
+    const voiceRes = await listVoiceEffects();
+    setTracks((prev) => ({
+      ...prev,
+      modulator: voiceRes
+    }));
+  }, [listVoiceEffects]);
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -146,8 +154,23 @@ export const HTTPAudioProvider = ({ children }) => {
   // ---------------------
   const loadVoiceEffect = useCallback((effect) => postWithQuery("/modulator", { effect }, "modulator_load"), [postWithQuery]);
   const setCustomEffect = useCallback((params) => postWithQuery("/modulator/custom", params, "modulator_custom"), [postWithQuery]);
-  const saveVoiceEffect = useCallback((name) => putWithQuery("/modulator", { name }, "modulator_save"), [putWithQuery]);
-  const deleteVoiceEffect = useCallback((name) => delWithQuery("/modulator", { name }, "modulator_delete"), [delWithQuery]);
+  const saveVoiceEffect = useCallback(
+    async (name) => {
+      const res = await putWithQuery("/modulator", { name }, "modulator_save");
+      await refreshVoiceEffects();
+      return res;
+    },
+    [putWithQuery, refreshVoiceEffects]
+  );  
+  const deleteVoiceEffect = useCallback(
+    async (name) => {
+      const res = await delWithQuery("/modulator", { name }, "modulator_delete");
+      await refreshVoiceEffects();
+      return res;
+    },
+    [delWithQuery, refreshVoiceEffects]
+  );
+
   const setModulatorVolume = useCallback((volume) => postWithQuery("/modulator/volume", { volume }, "modulator_volume"), [postWithQuery]);
 
   // ---------------------
@@ -190,10 +213,11 @@ export const HTTPAudioProvider = ({ children }) => {
         setCustomEffect,
         saveVoiceEffect,
         deleteVoiceEffect,
+        setModulatorVolume,
         // raw tracks
         getMusicTracks,
         getAmbientTracks,
-        getFxTracks,
+        getFxTracks
       }}
     >
       {children}

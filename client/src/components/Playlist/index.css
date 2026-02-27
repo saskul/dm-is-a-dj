@@ -56,3 +56,25 @@
 .folder.dim {
   color: var(--effect-color); /* dim other tracks/folders */
 }
+
+.folder-row,
+.track {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.name {
+  flex: 1;
+}
+
+.delete-icon {
+  margin-right: 10px;
+  opacity: 0.4;
+  cursor: pointer;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+  color: #f44336;
+}

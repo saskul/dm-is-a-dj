@@ -1,0 +1,185 @@
+:root {
+  --bg-main: #121212;
+  --bg-panel: #1e1e1e;
+  --bg-input: #2a2a2a;
+  --bg-hover: #333;
+  --border: #333;
+
+  --text-main: #eaeaea;
+  --text-muted: #9aa0a6;
+
+  --accent-blue: #4dabf7;
+  --accent-green: #4caf50;
+}
+
+.editor {
+  max-width: 420px;
+  padding: 16px;
+  background: var(--bg-panel);
+  color: var(--text-main);
+  font-family: system-ui, sans-serif;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.editor h2 {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Labels / fields */
+
+.name-field,
+.preset-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.name-field input,
+.preset-field select {
+  margin-top: 4px;
+  padding: 7px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-main);
+  outline: none;
+}
+
+.name-field input::placeholder {
+  color: var(--text-muted);
+}
+
+.name-field input:focus,
+.preset-field select:focus {
+  border-color: var(--accent-blue);
+}
+
+/* Sliders */
+
+.sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.slider-row label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+}
+
+.value {
+  color: var(--text-main);
+  opacity: 0.85;
+}
+
+.slider-row input[type="range"] {
+  width: 100%;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-hover);
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  border: none;
+}
+
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+
+/* Slider + number input group */
+.slider-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Number input — match dark theme */
+.number-input {
+  width: 60px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-size: 12px;
+  text-align: center;
+  outline: none;
+}
+
+/* Focus state for number input */
+.number-input:focus {
+  border-color: var(--accent-blue);
+}
+
+
+/* Buttons */
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.play-button,
+.save-button {
+  flex: 1;
+  padding: 9px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.play-button {
+  background: var(--accent-blue);
+  color: #000;
+}
+
+.play-button:hover {
+  background: #6bbcff;
+}
+
+.save-button {
+  background: var(--accent-green);
+  color: #000;
+}
+
+.save-button:hover {
+  background: #66bb6a;
+}
+
+/* Disabled / subtle states */
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

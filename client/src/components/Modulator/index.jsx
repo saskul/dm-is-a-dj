@@ -7,10 +7,11 @@ function Modulator () {
         tracks,
         requestLoading,
         loadVoiceEffect,
-        setModulatorVolume
+        setModulatorVolume,
+        deleteVoiceEffect
     } = useHTTPAudio();
     const { state } = useWS();
-    const files = tracks.modulator;
+    const files = Object.keys(tracks.modulator);
 
     const { modulator } = state;
 
@@ -29,6 +30,7 @@ function Modulator () {
             volume={volume}
             isVolumeLoading={isVolumeLoading}
             onVolumeChange={setModulatorVolume}
+            onDelete={deleteVoiceEffect}
         />
     );
 }

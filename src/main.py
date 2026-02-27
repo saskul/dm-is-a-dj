@@ -131,17 +131,35 @@ def voice_effect(effect: str):
 
 @app.post("/modulator/custom")
 def voice_effect(
-    gain: float = 0.0,        # 0..10    -> wzmocnienie sygnału
-    drive: float = 0.0,       # 0..1     -> przester / nasycenie
-    tone: float = 0.0,        # 0..1     -> filtr niskoprzepustowy, zmienia barwę
-    mix: float = 0.0,         # 0..1     -> miks dry/wet (czysty/efekt)
-    pitch: float = 0.0,       # -12..12  -> pitch shift w półtonach
-    chorus: float = 0.0,      # 0..1     -> głębokość efektu chorus
-    delay: float = 0.0,       # 0..500   -> czas delay w ms
-    reverb: float = 0.0,      # 0..1     -> ilość pogłosu
-    ring_mod: float = 0.0,    # 0..2000  -> częstotliwość modulacji ring w Hz
-    bitcrusher: float = 0.0   # 0..1     -> ilość redukcji bitów / cyfrowego szumu
+    gain: float = 0.0,          # 0..10 dB  -> wzmocnienie sygnału (w decybelach)
+    drive: float = 0.0,         # 0..1      -> przester / nasycenie
+    tone: float = 0.5,          # 0..1      -> filtr niskoprzepustowy (0 = ciemny, 1 = jasny)
+    mix: float = 1.0,           # 0..1      -> miks dry/wet (czysty/efekt)
+    pitch: int = 0,             # -24..24   -> pitch shift w półtonach
+    chorus: float = 0.0,        # 0..1      -> głębokość efektu chorus
+    delay: float = 0.0,         # 0..500    -> czas delay w ms
+    reverb: float = 0.0,        # 0..1      -> ilość pogłosu
+    ring_mod: float = 0.0,      # 0..2000   -> częstotliwość modulacji ring w Hz
+    bitcrusher: float = 0.0,    # 0..1      -> ilość redukcji bitów / cyfrowego szumu
+    low_pass: float = 0.0,      # 0..20000  -> częstotliwość odcięcia filtra dolnoprzepustowego (Hz)
+    high_pass: float = 0.0,     # 0..20000  -> częstotliwość odcięcia filtra górnoprzepustowego (Hz)
+    tremolo: float = 0.0        # 0..20     -> częstotliwość tremolo w Hz
 ):
+    # Validate and clamp parameters
+    gain = max(-20.0, min(20.0, gain))           # -20dB to +20dB range
+    drive = max(0.0, min(1.0, drive))
+    tone = max(0.0, min(1.0, tone))
+    mix = max(0.0, min(1.0, mix))
+    pitch = int(max(-24, min(24, pitch)))
+    chorus = max(0.0, min(1.0, chorus))
+    delay = max(0.0, min(500.0, delay))
+    reverb = max(0.0, min(1.0, reverb))
+    ring_mod = max(0.0, min(2000.0, ring_mod))
+    bitcrusher = max(0.0, min(1.0, bitcrusher))
+    low_pass = max(0.0, min(20000.0, low_pass))
+    high_pass = max(0.0, min(20000.0, high_pass))
+    tremolo = max(0.0, min(20.0, tremolo))
+    
     state["modulator"]["effect"] = set_custom_effect(
         gain=gain,
         drive=drive,
@@ -152,8 +170,29 @@ def voice_effect(
         delay=delay,
         reverb=reverb,
         ring_mod=ring_mod,
-        bitcrusher=bitcrusher
+        bitcrusher=bitcrusher,
+        low_pass=low_pass,
+        high_pass=high_pass,
+        tremolo=tremolo
     )
+    
+    # Update state with current parameters
+    state["modulator"]["params"] = {
+        "gain": gain,
+        "drive": drive,
+        "tone": tone,
+        "mix": mix,
+        "pitch": pitch,
+        "chorus": chorus,
+        "delay": delay,
+        "reverb": reverb,
+        "ring_mod": ring_mod,
+        "bitcrusher": bitcrusher,
+        "low_pass": low_pass,
+        "high_pass": high_pass,
+        "tremolo": tremolo
+    }
+    
     return state["modulator"]
 
 @app.put("/modulator")
