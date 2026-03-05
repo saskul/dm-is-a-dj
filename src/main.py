@@ -302,4 +302,4 @@ def serve_react_app(full_path: str):
 @app.on_event("startup")
 def announce_ip():
     local_ip = get_local_ip()
-    print(f"\n🚀 The server is available at http://{local_ip}:8000 in your local network\n")
+    print(f"\n🚀 The server is available at http://{local_ip}:9000 in your local network\n")

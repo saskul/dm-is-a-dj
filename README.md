@@ -64,7 +64,7 @@ pip install -r requirements.txt
 6. Setup environment variables for the client and create the build for the front-end.
 `./client/.env`:
 ```bash
-REACT_APP_API=http://localhost:8000
+REACT_APP_API=http://localhost:9000
 ```
 
 ```bash
