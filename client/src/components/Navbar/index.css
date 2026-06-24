@@ -14,11 +14,12 @@
   font-size: 1.4rem;
   padding: 10px;
   cursor: pointer;
-  transition: color 0.2s, transform 0.1s;
+  transition: color 0.2s, opacity 0.2s, transform 0.1s;
 }
 
 .nav-btn.on {
-  color: var(--header-color);
+  color: var(--effect-color);
+  opacity: 1;
 }
 
 .nav-btn.off {
