@@ -22,6 +22,38 @@ function buildTree(paths) {
   return root;
 }
 
+const isNumber = (value) =>
+  typeof value === "number" && Number.isFinite(value);
+
+const formatTime = (seconds) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${String(secs).padStart(2, "0")}`;
+};
+
+const TrackProgress = ({ position, duration }) => {
+  if (!isNumber(position) || !isNumber(duration) || duration <= 0) {
+    return null;
+  }
+
+  const progress = Math.min(Math.max(position / duration, 0), 1);
+
+  return (
+    <div className="track-progress">
+      <span>{formatTime(position)}</span>
+
+      <div className="track-progress-line">
+        <div
+          className="track-progress-fill"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
+
+      <span>{formatTime(duration)}</span>
+    </div>
+  );
+};
+
 const TreeNode = ({
   node,
   name,
@@ -29,6 +61,8 @@ const TreeNode = ({
   onDelete,
   currentTrack,
   loopMode,
+  position,
+  duration,
   parentPath = ""
 }) => {
   const [expanded, setExpanded] = useState(false);
@@ -93,6 +127,8 @@ const TreeNode = ({
               onDelete={onDelete}
               currentTrack={currentTrack}
               loopMode={loopMode}
+              position={position}
+              duration={duration}
               parentPath={fullPath}
             />
           ))}
@@ -107,6 +143,9 @@ const TreeNode = ({
     >
       <FontAwesomeIcon icon="music" />
       <span className="name">{name}</span>
+      {highlight && (
+        <TrackProgress position={position} duration={duration} />
+      )}
 
       {onDelete && (
         <FontAwesomeIcon
@@ -132,7 +171,9 @@ export const PlaylistExplorer = ({
   onLoopModeChange,
   hasLoopMode = false,
   hasCrossfade = false,
-  noControls = false
+  noControls = false,
+  position = null,
+  duration = null
 }) => {
   const tree = buildTree(files);
 
@@ -157,7 +198,7 @@ export const PlaylistExplorer = ({
                 onChange={onCrossfadeChange}
                 header="Crossfade"
                 units="s"
-                max={10}
+                max={20}
               />
             </div>
           )}
@@ -183,6 +224,8 @@ export const PlaylistExplorer = ({
             onDelete={onDelete}
             currentTrack={track}
             loopMode={loopMode}
+            position={position}
+            duration={duration}
           />
         ))}
       </div>

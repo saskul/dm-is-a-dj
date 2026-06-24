@@ -21,6 +21,8 @@ function Music () {
         loop_mode,
         track,
         volume,
+        position,
+        duration
     } = music;
 
     const isVolumeLoading = !!requestLoading.music_volume;
@@ -37,6 +39,8 @@ function Music () {
             onLoopModeChange={setMusicLoopMode}
             crossfade={crossfade_time}
             onCrossfadeChange={setMusicCrossfadeTime}
+            position={position}
+            duration={duration}
             hasLoopMode
             hasCrossfade
         />

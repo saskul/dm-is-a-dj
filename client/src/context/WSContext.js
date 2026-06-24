@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+const REACT_APP_API = window.REACT_APP_API || process.env.REACT_APP_API;
+
+
 const WSContext = createContext();
 
 export const useWS = () => useContext(WSContext);
@@ -14,7 +17,8 @@ export const WSProvider = ({ children }) => {
 
   const [connected, setConnected] = useState(false);
 
-  const API_BASE = process.env.REACT_APP_API?.replace(/\/$/, "");
+
+  const API_BASE = REACT_APP_API?.replace(/\/$/, "");
 
   useEffect(() => {
     if (!API_BASE) return;

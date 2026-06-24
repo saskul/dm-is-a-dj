@@ -61,12 +61,7 @@ source ./venv/bin/activate
 pip install -r requirements.txt
 ```
 
-6. Setup environment variables for the client and create the build for the front-end.
-`./client/.env`:
-```bash
-REACT_APP_API=http://localhost:9000
-```
-
+6. Create the build for the front-end.
 ```bash
 cd client
 npm run build

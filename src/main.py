@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
@@ -40,6 +40,12 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 FRONTEND_DIR = os.path.join(BASE_DIR, "client")
 BUILD_DIR = os.path.join(FRONTEND_DIR, "build")
 STATIC_DIR = os.path.join(BUILD_DIR, "static")
+
+PORT = os.environ.get("PORT", 9000)
+
+def get_api_url():
+    local_ip = get_local_ip()
+    return f"http://{local_ip}:{PORT}"
 
 app = FastAPI(title="DM is a DJ 🎧")
 
@@ -282,18 +288,25 @@ else:
 
 @app.get("/{full_path:path}")
 def serve_react_app(full_path: str):
-    """
-    Fallback endpoint dla wszystkich ścieżek front-endu.
-    Jeśli plik istnieje w build -> zwróć go,
-    jeśli nie istnieje -> zwróć index.html (React Router handle).
-    """
     requested_file = os.path.join(BUILD_DIR, full_path)
 
-    if os.path.isfile(requested_file):
+    if os.path.isfile(requested_file) and not requested_file.endswith("index.html"):
         return FileResponse(requested_file)
 
-    # fallback do index.html
-    return FileResponse(os.path.join(BUILD_DIR, "index.html"))
+    index_path = os.path.join(BUILD_DIR, "index.html")
+
+    with open(index_path, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    runtime_config = f"""
+    <script>
+      window.REACT_APP_API = {get_api_url()!r};
+    </script>
+    """
+
+    html = html.replace("</head>", runtime_config + "\n</head>")
+
+    return HTMLResponse(content=html)
 
 # =======================
 # STARTUP
@@ -301,5 +314,5 @@ def serve_react_app(full_path: str):
 
 @app.on_event("startup")
 def announce_ip():
-    local_ip = get_local_ip()
-    print(f"\n🚀 The server is available at http://{local_ip}:9000 in your local network\n")
+    api_url = get_api_url()
+    print(f"\n🚀 The server is available at {api_url} in your local network\n")

@@ -78,7 +78,7 @@ def _spawn(track, sock, loop=False, volume=100):
 # -------------------------
 # Crossfade
 # -------------------------
-def _crossfade(old_proc, old_sock, new_sock, target_vol, seconds):
+def _crossfade(old_proc, old_sock, new_sock, target_vol, seconds, fade_out_old=True):
     if seconds <= 0:
         if old_proc and _proc_alive(old_proc):
             old_proc.terminate()
@@ -92,8 +92,9 @@ def _crossfade(old_proc, old_sock, new_sock, target_vol, seconds):
     for i in range(CROSSFADE_STEPS):
         t = (i + 1) / CROSSFADE_STEPS
 
-        if old_proc and _proc_alive(old_proc) and old_sock and os.path.exists(old_sock):
-            _set_volume(old_sock, start_old * (1 - t))
+        if (fade_out_old):
+            if old_proc and _proc_alive(old_proc) and old_sock and os.path.exists(old_sock):
+                _set_volume(old_sock, start_old * (1 - t))
         if new_sock and os.path.exists(new_sock):
             _set_volume(new_sock, target_vol * t)
 
@@ -156,26 +157,27 @@ def _loop_worker(key):
         remaining = dur - pos
         crossfade = state[key].get("crossfade_time", 0)
 
+        mode = state[key].get("loop_mode")
+
         if (
-            state[key].get("loop_mode") == "list"
+            mode in ("list", "track")
             and remaining <= crossfade
             and state[key]["playlist"]
         ):
-            state[key]["playlist_index"] = (
-                state[key]["playlist_index"] + 1
-            ) % len(state[key]["playlist"])
+            if mode == "list":
+                state[key]["playlist_index"] = (
+                    state[key]["playlist_index"] + 1
+                ) % len(state[key]["playlist"])
 
             next_path = state[key]["playlist"][state[key]["playlist_index"]]
             rel = os.path.relpath(next_path, os.path.join(DATA_DIR, key))
-            play(key, rel)
+            play(key, rel, False)
             return
-
-        time.sleep(0.2)
 
 # -------------------------
 # Core player API
 # -------------------------
-def play(key, track):
+def play(key, track, fade_out_old=True):
     player = _PLAYERS[key]
     if "loop_stop" in player:
         player["loop_stop"].set()
@@ -191,13 +193,15 @@ def play(key, track):
 
     vol = state[key].get("volume", 100)
     fade = state[key].get("crossfade_time", 0)
-    loop = state[key].get("loop_mode") == "track" if key != "fx" else False
+    loop = False
 
     sock = f"/tmp/mpv_{key}_{int(time.time()*1000)}.sock"
     proc = _spawn(full, sock, loop=loop, volume=0 if key != "fx" else vol)
 
     if key != "fx":
-        threading.Thread(target=_crossfade, args=(player["proc"], player["sock"], sock, vol, fade), daemon=True).start()
+        threading.Thread(
+            target=_crossfade, args=(player["proc"], player["sock"], sock, vol, fade, fade_out_old), daemon=True
+        ).start()
 
     player["proc"], player["sock"] = proc, sock
     state[key]["playing"] = True
@@ -213,7 +217,7 @@ def play(key, track):
                 time.sleep(0.05)
             state[key].update({"playing": False, "track": None, "position": None, "duration": None})
         threading.Thread(target=_watch_fx, daemon=True).start()
-    elif state[key].get("loop_mode") == "list":
+    elif state[key].get("loop_mode") in ("list", "track"):
         player["loop_stop"].clear()
         threading.Thread(target=_loop_worker, args=(key,), daemon=True).start()
 
@@ -236,7 +240,7 @@ def set_volume(key, vol):
 def set_loop_mode(key, mode):
     state[key]["loop_mode"] = mode
     _set_playlist(key)
-    if mode == "list" and state[key]["playing"]:
+    if mode in ("list", "track") and state[key]["playing"]:
         _PLAYERS[key]["loop_stop"].clear()
         threading.Thread(target=_loop_worker, args=(key,), daemon=True).start()
 

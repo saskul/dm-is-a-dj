@@ -1,3 +1,5 @@
 #!/bin/bash
 
-uvicorn src.main:app --reload --host 0.0.0.0 --port 9000
+source ./.env
+
+uvicorn src.main:app --reload --host 0.0.0.0 --port $PORT

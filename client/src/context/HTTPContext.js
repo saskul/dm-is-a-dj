@@ -1,6 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 
+const REACT_APP_API = window.REACT_APP_API || process.env.REACT_APP_API;
+
 const HTTPAudioContext = createContext();
 export const useHTTPAudio = () => useContext(HTTPAudioContext);
 
@@ -9,7 +11,7 @@ export const HTTPAudioProvider = ({ children }) => {
   const [requestLoading, setRequestLoading] = useState({}); // per-request loading
   const [tracks, setTracks] = useState({ music: [], ambient: [], fx: [] });
 
-  const API_BASE = process.env.REACT_APP_API?.replace(/\/$/, "");
+  const API_BASE = REACT_APP_API.replace(/\/$/, "");
   if (!API_BASE) console.warn("REACT_APP_API is not defined in your .env file!");
 
   // ---------------------

@@ -4,7 +4,7 @@ state = {
         "track": None,
         "crossfade_time": 3,
         "volume": 100,
-        "loop_mode": "list",
+        "loop_mode": "track",
         "playlist": [],
         "playlist_index": 0,
         "position": 0.0,
