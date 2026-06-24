@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import './index.css';
+import { memo, useCallback, useMemo, useState } from "react";
 import { Slider } from "../Slider";
 import { LoopModeDropdown } from "../Loopmode";
+import './index.css';
 
 function buildTree(paths) {
   const root = {};
@@ -21,6 +21,14 @@ function buildTree(paths) {
 
   return root;
 }
+
+const sortAlphabetically = (items) =>
+  [...items].sort((a, b) => {
+    return a.localeCompare(b, undefined, {
+      numeric: true,
+      sensitivity: "base"
+    })
+  });
 
 const isNumber = (value) =>
   typeof value === "number" && Number.isFinite(value);
@@ -54,7 +62,7 @@ const TrackProgress = ({ position, duration }) => {
   );
 };
 
-const TreeNode = ({
+const TreeNode = memo(({
   node,
   name,
   onClick,
@@ -70,32 +78,35 @@ const TreeNode = ({
   const isFolder = typeof node === "object";
   const fullPath = parentPath ? `${parentPath}/${name}` : name;
 
-  const handleToggle = () => setExpanded((prev) => !prev);
+  const handleToggle = useCallback(() => {
+    setExpanded((prev) => !prev);
+  }, []);
 
-  const handleDelete = (e) => {
+  const handleDelete = useCallback((e) => {
     e.stopPropagation();
     onDelete?.(fullPath);
-  };
+  }, [onDelete, fullPath]);
 
-  let highlight = false;
-  let dim = false;
+  const handleClick = useCallback(() => {
+    if (!isFolder) {
+      onClick(node);
+    }
+  }, [isFolder, onClick, node]);
 
-  if (!isFolder && node === currentTrack) {
-    highlight = true;
-  }
+  const highlight = !isFolder && node === currentTrack;
 
-  if (
-    !isFolder &&
-    loopMode === "list" &&
-    currentTrack?.startsWith(parentPath + "/") &&
-    node !== currentTrack
-  ) {
-    dim = true;
-  }
+  const dim =
+    (!isFolder &&
+      loopMode === "list" &&
+      currentTrack?.startsWith(parentPath + "/") &&
+      node !== currentTrack) ||
+    (isFolder &&
+      currentTrack?.startsWith(fullPath + "/"));
 
-  if (isFolder && loopMode === "list" && currentTrack?.startsWith(fullPath + "/")) {
-    dim = true;
-  }
+  const sortedKeys = useMemo(() => {
+    if (!isFolder) return [];
+    return sortAlphabetically(Object.keys(node));
+  }, [isFolder, node]);
 
   if (isFolder) {
     return (
@@ -106,6 +117,7 @@ const TreeNode = ({
           ) : (
             <FontAwesomeIcon icon="folder" />
           )}
+
           <span className="name">{name}</span>
 
           {onDelete && (
@@ -118,7 +130,7 @@ const TreeNode = ({
         </div>
 
         {expanded &&
-          Object.keys(node).map((key) => (
+          sortedKeys.map((key) => (
             <TreeNode
               key={key}
               node={node[key]}
@@ -139,10 +151,11 @@ const TreeNode = ({
   return (
     <div
       className={`track ${highlight ? "highlight" : ""} ${dim ? "dim" : ""}`}
-      onClick={() => onClick(node)}
+      onClick={handleClick}
     >
       <FontAwesomeIcon icon="music" />
       <span className="name">{name}</span>
+
       {highlight && (
         <TrackProgress position={position} duration={duration} />
       )}
@@ -156,7 +169,17 @@ const TreeNode = ({
       )}
     </div>
   );
-};
+}, (prev, next) => {
+  if (
+    prev.position !== next.position || 
+    prev.duration !== next.duration ||
+    prev.currentTrack !== next.currentTrack
+  ) {
+    return false;
+  } 
+  
+  return true;
+});
 
 export const PlaylistExplorer = ({
   files,
@@ -175,7 +198,11 @@ export const PlaylistExplorer = ({
   position = null,
   duration = null
 }) => {
-  const tree = buildTree(files);
+  const tree = useMemo(() => buildTree(files), [files]);
+  const sortedRootKeys = useMemo(
+    () => sortAlphabetically(Object.keys(tree)),
+    [tree]
+  );
 
   return (
     <div className="playlist_wrapper">
@@ -215,7 +242,7 @@ export const PlaylistExplorer = ({
       )}
 
       <div className="playlist">
-        {Object.keys(tree).map((key) => (
+        {sortedRootKeys.map((key) => (
           <TreeNode
             key={key}
             node={tree[key]}

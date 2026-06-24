@@ -1,13 +1,15 @@
 import Button from './Button';
 import "./index.css";
 
-const Navbar = () => {
+const Navbar = ({ renderModulator }) => {
   return (
     <nav className="navbar">
       <Button channel="music" icon="music" />
       <Button channel="ambient" icon="tree" />
       <Button channel="fx" icon="bolt" />
-      <Button channel="voice" icon="microphone" />
+      {renderModulator && (
+        <Button channel="voice" icon="microphone" />
+      )}
     </nav>
   );
 };

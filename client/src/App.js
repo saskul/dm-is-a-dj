@@ -11,13 +11,16 @@ import ModulatorEditor from './components/ModulatorEditor';
 import './icons';
 import './App.css';
 
+const { REACT_APP_RENDER_MODULATOR } = process.env;
+const RENDER_MODULATOR = Boolean(Number(REACT_APP_RENDER_MODULATOR));
+
 function App() {
   return (
     <div className="root">
       <WSProvider>
         <HTTPAudioProvider>
           <NavbarProvider>
-            <Navbar />
+            <Navbar renderModulator={RENDER_MODULATOR} />
           </NavbarProvider>
           <div className='sections'>
             <Section id="section-music" header='Music'>
@@ -29,15 +32,20 @@ function App() {
             <Section id="section-fx" header='FX'>
               <FX />
             </Section>
-            <Section id="section-voice" header='Modulator'>
-              <Modulator />
-            </Section>
-            <Section header='Modulator Editor'>
-              <ModulatorEditor
-                onPlay={(params) => console.log(params)}
-                onSubmit={(params) => console.log(params)}
-              />
-            </Section>
+            {RENDER_MODULATOR && (
+              <>
+                <Section id="section-voice" header='Modulator'>
+                  <Modulator />
+                </Section>
+              
+                <Section header='Modulator Editor'>
+                  <ModulatorEditor
+                    onPlay={(params) => console.log(params)}
+                    onSubmit={(params) => console.log(params)}
+                  />
+                </Section>
+              </>
+            )}
           </div>
         </HTTPAudioProvider>
       </WSProvider>

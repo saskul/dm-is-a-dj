@@ -186,7 +186,7 @@ export const HTTPAudioProvider = ({ children }) => {
   };
 
   if (loading) return <FontAwesomeIcon icon="spinner" spin />;
-
+  
   return (
     <HTTPAudioContext.Provider
       value={{

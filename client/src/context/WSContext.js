@@ -1,7 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import isEqual from "lodash/isEqual";
 
 const REACT_APP_API = window.REACT_APP_API || process.env.REACT_APP_API;
+const API_BASE = REACT_APP_API?.replace(/\/$/, "");
 
+const mergeIfChanged = (prev, data) => {
+  const next = {
+    ...prev,
+    ...data
+  };
+
+  return isEqual(prev, next) ? prev : next;
+};
 
 const WSContext = createContext();
 
@@ -17,9 +27,6 @@ export const WSProvider = ({ children }) => {
 
   const [connected, setConnected] = useState(false);
 
-
-  const API_BASE = REACT_APP_API?.replace(/\/$/, "");
-
   useEffect(() => {
     if (!API_BASE) return;
 
@@ -30,16 +37,19 @@ export const WSProvider = ({ children }) => {
       const wsBase = API_BASE.replace(/^http/, "ws");
       socket = new WebSocket(`${wsBase}/ws`);
 
-      socket.onopen = () => setConnected(true);
+      socket.onopen = () => {
+        setConnected((prev) => (prev ? prev : true));
+      };
+
       socket.onclose = () => {
-        setConnected(false);
+        setConnected((prev) => (!prev ? prev : false));
         reconnectTimeout = setTimeout(connect, 2000);
       };
       socket.onerror = (e) => console.error("WebSocket error", e);
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        setState((prev) => ({ ...prev, ...data }));
+        setState((prev) => mergeIfChanged(prev, data));
       };
     };
 
@@ -51,8 +61,13 @@ export const WSProvider = ({ children }) => {
     };
   }, [API_BASE]);
 
+  const value = React.useMemo(
+    () => ({ state, connected }),
+    [state, connected]
+  );
+
   return (
-    <WSContext.Provider value={{ state, connected }}>
+    <WSContext.Provider value={value}>
       {children}
     </WSContext.Provider>
   );

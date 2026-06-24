@@ -60,13 +60,14 @@
 .folder-row,
 .track {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
 }
 
 .name {
-  flex: 0 0 auto;
-  max-width: 220px;
+  flex: 1;
+  min-width: 0;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -85,14 +86,10 @@
 }
 
 .track-progress {
-  flex: 1;
-
+  flex: 0 0 100%;
   display: flex;
   align-items: center;
   gap: 8px;
-
-  margin-left: 12px;
-  margin-right: 10px;
 
   color: var(--effect-color);
   font-size: 0.8rem;
@@ -102,8 +99,9 @@
 
 .track-progress-line {
   flex: 1;
+  min-width: 80px;
+
   height: 4px;
-  min-width: 70px;
   background-color: rgba(255, 255, 255, 0.14);
   border-radius: 999px;
   overflow: hidden;
