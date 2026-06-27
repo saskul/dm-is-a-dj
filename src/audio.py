@@ -11,15 +11,29 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 MIX = os.environ.get("MIX_SINK_NAME", "mixout")
 
 CROSSFADE_STEPS = 20
+VOLUME_FADE_STEPS = 20
+VOLUME_FADE_SECONDS = 3
+
 SUPPORTED_EXT = (".mp3", ".wav", ".flac", ".ogg")
 
 # -------------------------
 # Runtime-only player registry
 # -------------------------
 _PLAYERS = {
-    "music": {"proc": None, "sock": None, "loop_stop": threading.Event()},
-    "ambient": {"proc": None, "sock": None, "loop_stop": threading.Event()},
-    "fx": {"proc": None, "sock": None},  # FX are fire-and-forget
+    "music": {
+        "proc": None,
+        "sock": None,
+        "loop_stop": threading.Event()
+    },
+    "ambient": {
+        "proc": None,
+        "sock": None,
+        "loop_stop": threading.Event()
+    },
+    "fx": {
+        "proc": None,
+        "sock": None
+    },  # FX are fire-and-forget
 }
 
 # -------------------------
@@ -43,9 +57,32 @@ def _get_prop(sock, prop):
             return json.loads(s.recv(4096).decode()).get("data")
     except Exception:
         return None
+    
+def _fade_volume(sock, vol, fade_duration):
+    if not sock or not os.path.exists(sock):
+        return
+
+    target_vol = max(0, min(100, float(vol)))
+    start_vol = _get_prop(sock, "volume")
+
+    if start_vol is None:
+        start_vol = target_vol
+
+    step_delay = fade_duration / VOLUME_FADE_STEPS
+
+    for i in range(VOLUME_FADE_STEPS):
+        if not os.path.exists(sock):
+            return
+
+        t = (i + 1) / VOLUME_FADE_STEPS
+        next_vol = start_vol + (target_vol - start_vol) * t
+
+        _set_volume(sock, next_vol)
+        time.sleep(step_delay)
+    
 
 def _set_volume(sock, vol):
-    vol = max(0, min(100, int(vol)))
+    vol = max(0, min(100, float(vol)))
     _send_mpv(sock, {"command": ["set_property", "volume", vol]})
 
 def _proc_alive(proc):
@@ -232,10 +269,22 @@ def stop(key):
     player["proc"] = player["sock"] = None
     state[key].update({"playing": False, "track": None, "position": None, "duration": None})
 
-def set_volume(key, vol):
-    state[key]["volume"] = max(0, min(100, int(vol)))
-    if _PLAYERS[key].get("sock"):
-        _set_volume(_PLAYERS[key]["sock"], vol)
+def set_volume(key, vol, fade_duration=0):
+    vol = max(0, min(100, int(vol)))
+    state[key]["volume"] = vol
+
+    sock = _PLAYERS[key].get("sock")
+    if not sock:
+        return
+
+    if fade_duration:
+        threading.Thread(
+            target=_fade_volume,
+            args=(sock, vol, fade_duration),
+            daemon=True
+        ).start()
+    else:
+        _set_volume(sock, vol)
 
 def set_loop_mode(key, mode):
     state[key]["loop_mode"] = mode
@@ -256,13 +305,13 @@ def set_crossfade_time(key, seconds: float):
 # -------------------------
 def play_music(track): play("music", track)
 def stop_music(): stop("music")
-def set_music_volume(v): set_volume("music", v)
+def set_music_volume(v): set_volume("music", v, VOLUME_FADE_SECONDS)
 def set_music_loop_mode(m): set_loop_mode("music", m)
 def set_music_crossfade_time(s): set_crossfade_time("music", s)
 
 def play_ambient(track): play("ambient", track)
 def stop_ambient(): stop("ambient")
-def set_ambient_volume(v): set_volume("ambient", v)
+def set_ambient_volume(v): set_volume("ambient", v, VOLUME_FADE_SECONDS)
 def set_ambient_loop_mode(m): set_loop_mode("ambient", m)
 def set_ambient_crossfade_time(s): set_crossfade_time("ambient", s)
 
